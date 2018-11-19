@@ -51,6 +51,8 @@ def generate_random_training_image(outFilePath):
     plt.axis('off')
     # plt.show()
     plt.savefig(outFilePath)
+    f = plt.figure()
+
 
 train_img_dir = "./inputs/train"
 test_img_dir = "./inputs/test"
