@@ -42,4 +42,3 @@ def img_files_to_np_array(folder, image_width, image_height, num_channels):
         if i % 250 == 0:
             print("%d images to array" % i)
     return dataset
-
