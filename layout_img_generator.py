@@ -56,7 +56,7 @@ def generate_random_training_image(outFilePath):
 
 train_img_dir = "./data/train"
 test_img_dir = "./data/test"
-validate_img_dir = "./inputs/validate"
+validate_img_dir = "./data/validate"
 n_train = 900
 n_test = 100
 n_validate= 100

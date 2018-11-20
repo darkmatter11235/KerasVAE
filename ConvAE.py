@@ -14,7 +14,7 @@ image_height = 120
 num_channels = 1
 #num_channels = 3
 
-num_epochs = 50
+num_epochs = 500
 
 # input layer will be image of shape (28,28,1)
 
