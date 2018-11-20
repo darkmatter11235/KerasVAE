@@ -16,7 +16,22 @@ num_channels = 1
 
 num_epochs = 4000
 
+load_existing = False
+
 # input layer will be image of shape (28,28,1)
+# Load the mnist data set
+#(x_train, _), (x_test, _) = mnist.load_data()
+
+folder = "./data/train"
+x_train = img_files_to_np_array(folder, image_width, image_height, num_channels)
+x_train = x_train.astype('float32') / 255.
+x_train = x_train.reshape(len(x_train), image_width, image_height, num_channels)
+
+folder = "./data/test"
+x_test = img_files_to_np_array(folder, image_width, image_height, num_channels)
+x_test = x_test.astype('float32') / 255.
+x_test = x_test.reshape(len(x_test), image_width, image_height, num_channels)
+
 
 #input_img = Input(shape=(28, 28, 1,))
 input_img = Input(shape=(image_width, image_height, num_channels,))
@@ -61,31 +76,6 @@ decoder_layer = autoencoder.layers[-7]
 
 decoder = Model(encoded_input, decoder_layer(encoded_input))
 
-# Load the mnist data set
-
-folder = "./data/train"
-x_train = img_files_to_np_array(folder, image_width, image_height, num_channels)
-
-folder = "./data/test"
-x_test = img_files_to_np_array(folder, image_width, image_height, num_channels)
-
-#(x_train, _), (x_test, _) = mnist.load_data()
-
-x_train = x_train.astype('float32') / 255.
-
-x_test = x_test.astype('float32') / 255.
-
-# x_train = x_train.reshape(len(x_train), np.prod(x_train.shape[1:]))
-
-# x_test = x_test.reshape(len(x_test), np.prod(x_test.shape[1:]))
-x_train = x_train.reshape(len(x_train), image_width, image_height, num_channels)
-
-x_test = x_test.reshape(len(x_test), image_width, image_height, num_channels)
-#(x_train, _), (x_test, _) = mnist.load_data()
-#x_train = x_train.astype('float32') / 255.
-#x_test = x_test.astype('float32') / 255.
-#x_train = np.reshape(x_train, (len(x_train), 28, 28, 1))  # adapt this if using `channels_first` image data format
-#x_test = np.reshape(x_test, (len(x_test), 28, 28, 1))  # adapt this if using `channels_first` image data format
 
 # from keras.callbacks import TensorBoard
 autoencoder.fit(x_train, x_train,
@@ -100,20 +90,21 @@ autoencoder.fit(x_train, x_train,
 #encoded_images = encoder.predict(x_test)
 #print(encoded_images.shape)
 #decoded_images = decoder.predict(encoded_images)
-"""
 
-del autoencoder
-import h5py
+if load_existing:
+    del autoencoder
+    import h5py
+    f = h5py.File('convAE_1000.h5', 'r')
+    print(f.attrs.get('keras_version'))
+    autoencoder = load_model("convAE_1000.h5")
 
-f = h5py.File('convAE_1000.h5', 'r')
-print(f.attrs.get('keras_version'))
-autoencoder = load_model("convAE_1000.h5")
-"""
+
 decoded_images = autoencoder.predict(x_test)
 
-# autoencoder.save("./convAE_"+str(num_epochs)+".h5")
+if not load_existing:
+    autoencoder.save("./convAE_"+str(num_epochs)+".h5")
 
-n = 10
+n = 1
 
 plt.figure(figsize=(20, 10))
 for i in range(n):
