@@ -17,7 +17,6 @@ def save_image(npdata, outfilename):
 
 
 def img_files_to_np_array(folder, image_width, image_height, num_channels):
-
     files = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
     print("# of training images " + str(len(files)))
     # dataset = np.ndarray(shape=(len(files), num_channels, image_height, image_width),
@@ -28,13 +27,19 @@ def img_files_to_np_array(folder, image_width, image_height, num_channels):
     i = 0
     for _file in files:
         img = load_img(folder + "/" + _file)  # this is a PIL image
+        if num_channels == 1:
+            img = img.convert('L')
+            # img = gray.point(lambda x: 0 if x<128 else 255, '1')
+            # bw.save("result_bw.png")
+        # img.show()
+        # img.resize((image_width, image_height))
         img.thumbnail((image_width, image_height))
-        #img.show()
-        #img.resize((image_width, image_height))
         # Convert to Numpy Array
         x = img_to_array(img)
-        #print(x.shape)
-        #x = x.reshape((num_channels, image_height, image_width))
+        x[x < 128] = 0
+        x[x >= 128] = 255
+        # print(x.shape)
+        # x = x.reshape((num_channels, image_height, image_width))
         # Normalize
         # x = (x - 128.0) / 128.0
         dataset[i] = x
