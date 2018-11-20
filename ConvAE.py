@@ -14,7 +14,7 @@ image_height = 120
 num_channels = 1
 #num_channels = 3
 
-num_epochs = 5
+num_epochs = 1000
 
 # input layer will be image of shape (28,28,1)
 
@@ -103,7 +103,7 @@ autoencoder.fit(x_train, x_train,
 #decoded_images = decoder.predict(encoded_images)
 decoded_images = autoencoder.predict(x_test)
 
-autoencoder.save("./convAE.h5")
+autoencoder.save("./convAE_"+str(num_epochs)+".h5")
 
 n = 10
 
