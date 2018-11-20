@@ -28,6 +28,8 @@ def img_files_to_np_array(folder, image_width, image_height, num_channels):
     i = 0
     for _file in files:
         img = load_img(folder + "/" + _file)  # this is a PIL image
+        if num_channels == 1:
+            img = img.convert("L")
         img.thumbnail((image_width, image_height))
         #img.show()
         #img.resize((image_width, image_height))
@@ -37,6 +39,8 @@ def img_files_to_np_array(folder, image_width, image_height, num_channels):
         #x = x.reshape((num_channels, image_height, image_width))
         # Normalize
         # x = (x - 128.0) / 128.0
+        x[x < 128 ] = 0
+        x[x >= 128] = 255
         dataset[i] = x
         i += 1
         if i % 250 == 0:

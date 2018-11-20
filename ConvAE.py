@@ -11,8 +11,10 @@ image_width = 160
 #image_height = 28
 image_height = 120
 
-#num_channels = 1
-num_channels = 3
+num_channels = 1
+#num_channels = 3
+
+num_epochs = 50
 
 # input layer will be image of shape (28,28,1)
 
@@ -43,7 +45,8 @@ x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(8
 
 x = UpSampling2D((2, 2))(x)  # (output_shape=(4,4,8))
 
-decoded = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
+# decoded = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
+decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same')(x)
 
 autoencoder = Model(input_img, decoded)
 
@@ -87,7 +90,7 @@ x_test = x_test.reshape(len(x_test), image_width, image_height, num_channels)
 # from keras.callbacks import TensorBoard
 
 autoencoder.fit(x_train, x_train,
-                epochs=50,
+                epochs=num_epochs,
                 batch_size=256,
                 shuffle=True,
                 validation_data=(x_test, x_test))
@@ -106,14 +109,20 @@ plt.figure(figsize=(20, 10))
 for i in range(n):
     # display original image
     ax = plt.subplot(2, n, i + 1)
-    plt.imshow(x_test[i].reshape(image_height, image_width, num_channels))
+    if num_channels > 1 :
+        plt.imshow(x_test[i].reshape(image_height, image_width, num_channels))
+    else:
+        plt.imshow(x_test[i].reshape(image_height, image_width))
     # plt.gray()
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
 
     # reconstruction
     ax = plt.subplot(2, n, i + 1 + n)
-    plt.imshow(decoded_images[i].reshape(image_height, image_width, num_channels))
+    if num_channels > 1 :
+        plt.imshow(decoded_images[i].reshape(image_height, image_width, num_channels))
+    else:
+        plt.imshow(decoded_images[i].reshape(image_height, image_width))
     # plt.gray()
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
