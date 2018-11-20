@@ -32,7 +32,7 @@ def generate_random_training_image(outFilePath):
         # r1 = Rectangle((x, y), xloc, height)
         # r2 = Rectangle((x + cut_width, y), cut_width, cut_height)
         cut_locs = []
-        print(ncuts)
+        #print(ncuts)
         for j in range(ncuts):
             xloc = round(np.random.sample(1)[0], 2)
             cut_locs.append(xloc)
@@ -60,12 +60,9 @@ validate_img_dir = "./data/validate"
 n_train = 900
 n_test = 100
 n_validate= 100
-
-#os.makedirs(train_img_dir,exist_ok=True)
-#os.makedirs(test_img_dir,exist_ok=True)
-os.makedirs(train_img_dir)
-os.makedirs(test_img_dir)
-#os.makedirs(validate_img_dir,exist_ok=True)
+os.makedirs(train_img_dir,exist_ok=True)
+os.makedirs(test_img_dir,exist_ok=True)
+os.makedirs(validate_img_dir,exist_ok=True)
 
 
 for i in range(n_train):
@@ -77,7 +74,6 @@ for i in range(n_test):
     img_path = test_img_dir+"/test_"+str(i)+".png"
     generate_random_training_image(img_path)
 
-"""
 
 for i in range(n_validate):
     img_path = validate_img_dir+"/validate_"+str(i)+".png"
