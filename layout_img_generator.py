@@ -32,7 +32,7 @@ def generate_random_training_image(outFilePath):
         # r1 = Rectangle((x, y), xloc, height)
         # r2 = Rectangle((x + cut_width, y), cut_width, cut_height)
         cut_locs = []
-        print(ncuts)
+        #print(ncuts)
         for j in range(ncuts):
             xloc = round(np.random.sample(1)[0], 2)
             cut_locs.append(xloc)
