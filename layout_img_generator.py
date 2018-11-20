@@ -54,17 +54,16 @@ def generate_random_training_image(outFilePath):
     f = plt.figure()
 
 
-train_img_dir = "./inputs/train"
-test_img_dir = "./inputs/test"
+train_img_dir = "./data/train"
+test_img_dir = "./data/test"
 validate_img_dir = "./inputs/validate"
 n_train = 900
 n_test = 100
 n_validate= 100
-#os.makedirs(train_img_dir,exist_ok=True)
-#os.makedirs(test_img_dir,exist_ok=True)
+os.makedirs(train_img_dir,exist_ok=True)
+os.makedirs(test_img_dir,exist_ok=True)
 os.makedirs(validate_img_dir,exist_ok=True)
 
-"""
 
 for i in range(n_train):
     img_path = train_img_dir+"/train_"+str(i)+".png"
@@ -75,7 +74,6 @@ for i in range(n_test):
     img_path = test_img_dir+"/test_"+str(i)+".png"
     generate_random_training_image(img_path)
 
-"""
 
 for i in range(n_validate):
     img_path = validate_img_dir+"/validate_"+str(i)+".png"
