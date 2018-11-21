@@ -94,7 +94,7 @@ decoded_images = autoencoder.predict(x_test)
 if load_existing:
     del autoencoder
     import h5py
-    model_file = 'convAE_' + str(ref_model_param) + '.h5'
+    model_file = 'DeepAE_' + str(ref_model_param) + '.h5'
     # f = h5py.File(model_file, 'r')
     # print(f.attrs.get('keras_version'))
     autoencoder = load_model(model_file)
