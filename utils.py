@@ -2,7 +2,8 @@ from PIL import Image
 import numpy as np
 import os
 from keras.preprocessing.image import img_to_array, load_img
-
+import keras.backend as K
+from keras.objectives import binary_crossentropy
 
 def load_image(infilename):
     img = Image.open(infilename)
@@ -15,6 +16,36 @@ def save_image(npdata, outfilename):
     img = Image.fromarray(np.asarray(np.clip(npdata, 0, 255), dtype="uint8"), "L")
     img.save(outfilename)
 
+def expandedSobel(inputTensor):
+    # this contains both X and Y sobel filters in the format (3,3,1,2)
+    # size is 3 x 3, it considers 1 input channel and has two output channels: X and Y
+    sobelFilter = K.variable([[[[1., 1.]], [[0., 2.]], [[-1., 1.]]],
+                              [[[2., 0.]], [[0., 0.]], [[-2., 0.]]],
+                              [[[1., -1.]], [[0., -2.]], [[-1., -1.]]]])
+    #this considers data_format = 'channels_last'
+    inputChannels = K.reshape(K.ones_like(inputTensor[0,0,0,:]),(1,1,-1,1))
+    #if you're using 'channels_first', use inputTensor[0,:,0,0] above
+    return sobelFilter * inputChannels
+
+def sobelLoss(yTrue,yPred):
+
+    #get the sobel filter repeated for each input channel
+    filt = expandedSobel(yTrue)
+
+    #calculate the sobel filters for yTrue and yPred
+    #this generates twice the number of input channels
+    #a X and Y channel for each input channel
+    sobelTrue = K.depthwise_conv2d(yTrue,filt)
+    sobelPred = K.depthwise_conv2d(yPred,filt)
+
+    #now you just apply the mse:
+    return K.mean(K.square(sobelTrue - sobelPred))
+
+def xent_sobel(yTrue, yPred):
+
+    xent_loss = binary_crossentropy(yTrue, yPred)
+    sobel_loss = sobelLoss(yTrue, yPred)
+    return xent_loss + sobel_loss
 
 def img_files_to_np_array(folder, image_width, image_height, num_channels):
     files = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]

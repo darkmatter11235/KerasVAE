@@ -15,7 +15,7 @@ image_height = 120
 num_channels = 1
 # num_channels = 3
 
-num_epochs = 10000
+num_epochs = 2000
 
 load_existing = False
 
@@ -86,7 +86,8 @@ def chamfer_loss_value(y_true, y_pred):
     return K.mean(finalChamferDistanceSum)
 
 
-autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
+autoencoder.compile(optimizer='adadelta', loss=xent_sobel)
+#autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
 #autoencoder.compile(optimizer='adadelta', loss=chamfer_loss_value)
 
 encoder = Model(input_img, encoded)
