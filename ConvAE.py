@@ -12,20 +12,20 @@ image_width = 160
 # image_height = 28
 image_height = 120
 
-num_channels = 1
+num_channels = 10000
 # num_channels = 3
 
-num_epochs = 10000
+num_epochs = 1
 
 load_existing = False
 
-ref_model_param = 4000
+ref_model_param = 5000
 
-nfilters_L1 = 8
+nfilters_L1 = 32
 
-nfilters_L2 = 4
+nfilters_L2 = 16
 
-nfilters_L3 = 4
+nfilters_L3 = 16
 
 # input layer will be image of shape (28,28,1)
 # Load the mnist data set
@@ -93,7 +93,7 @@ encoder = Model(input_img, encoded)
 
 # encoded_input = Input(shape=(4, 4, 8))
 # encoded_input = Input(shape=(20, 15, 8))
-encoded_input = Input(shape=(20, 15, 4))
+encoded_input = Input(shape=(20, 15, 16))
 
 decoder_layer = autoencoder.layers[-7]
 
