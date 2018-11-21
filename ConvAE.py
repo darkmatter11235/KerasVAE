@@ -12,10 +12,10 @@ image_width = 160
 # image_height = 28
 image_height = 120
 
-num_channels = 10000
+num_channels = 1
 # num_channels = 3
 
-num_epochs = 1
+num_epochs = 10000
 
 load_existing = False
 
