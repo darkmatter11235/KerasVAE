@@ -25,7 +25,7 @@ image_height = 120
 
 num_channels = 1
 
-num_epochs = 5000
+num_epochs = 5
 
 load_existing = False
 
@@ -75,6 +75,8 @@ decoded = Dense(input_size, activation='sigmoid')(x)
 autoencoder = Model(input_img, decoded)
 
 autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
+
+autoencoder.summary()
 
 if not load_existing:
     # from keras.callbacks import TensorBoard

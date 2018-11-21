@@ -15,10 +15,17 @@ image_height = 120
 num_channels = 1
 # num_channels = 3
 
-num_epochs = 4
+num_epochs = 4000
 
-load_existing = True
+load_existing = False
+
 ref_model_param = 4000
+
+nfilters_L1 = 8
+
+nfilters_L2 = 4
+
+nfilters_L3 = 4
 
 # input layer will be image of shape (28,28,1)
 # Load the mnist data set
@@ -37,27 +44,27 @@ x_test = x_test.reshape(len(x_test), image_width, image_height, num_channels)
 # input_img = Input(shape=(28, 28, 1,))
 input_img = Input(shape=(image_width, image_height, num_channels,))
 
-x = Conv2D(16, (3, 3), activation='relu', padding='same')(input_img)  # (output_shape=(24,24,16)
+x = Conv2D(nfilters_L1, (3, 3), activation='relu', padding='same')(input_img)  # (output_shape=(24,24,16)
 
 x = MaxPooling2D((2, 2), padding='same')(x)  # (output_shape=(20,20,16)
 
-x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(16,16,8))
+x = Conv2D(nfilters_L2, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(16,16,8))
 
 x = MaxPooling2D((2, 2), padding='same')(x)  # (output_shape=(12,12,8))
 
-x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(8,8,8))
+x = Conv2D(nfilters_L3, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(8,8,8))
 
 encoded = MaxPooling2D((2, 2), padding='same')(x)  # (output_shape=(4,4,8))
 
-x = Conv2D(8, (3, 3), activation='relu', padding='same')(encoded)  # (output_shape=(24,24,16)
+x = Conv2D(nfilters_L3, (3, 3), activation='relu', padding='same')(encoded)  # (output_shape=(24,24,16)
 
 x = UpSampling2D((2, 2))(x)  # (output_shape=(20,20,16)
 
-x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(16,16,8))
+x = Conv2D(nfilters_L2, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(16,16,8))
 
 x = UpSampling2D((2, 2))(x)  # (output_shape=(12,12,8))
 
-x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(8,8,8))
+x = Conv2D(nfilters_L1, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(8,8,8))
 
 x = UpSampling2D((2, 2))(x)  # (output_shape=(4,4,8))
 
@@ -85,7 +92,8 @@ autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
 encoder = Model(input_img, encoded)
 
 # encoded_input = Input(shape=(4, 4, 8))
-encoded_input = Input(shape=(20, 15, 8))
+# encoded_input = Input(shape=(20, 15, 8))
+encoded_input = Input(shape=(20, 15, 4))
 
 decoder_layer = autoencoder.layers[-7]
 
