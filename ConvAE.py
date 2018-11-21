@@ -15,7 +15,7 @@ image_height = 120
 num_channels = 1
 # num_channels = 3
 
-num_epochs = 5000
+num_epochs = 10000
 
 load_existing = False
 
