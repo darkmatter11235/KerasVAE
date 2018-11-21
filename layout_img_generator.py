@@ -74,7 +74,7 @@ for i in range(n_test):
     img_path = test_img_dir+"/test_"+str(i)+".png"
     generate_random_training_image(img_path)
 
-
+"""
 for i in range(n_validate):
     img_path = validate_img_dir+"/validate_"+str(i)+".png"
     generate_random_training_image(img_path)

@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from utils import *
 
 # encoding dimension size
-encoding_dim = 1500
+encoding_dim = 200
 
 # image dimensions
 image_width = 80
