@@ -20,6 +20,8 @@ filter_index = 0
 
 layer_output = layer_dict[layer_name].output
 
+print(layer_output.shape)
+
 loss = K.mean(layer_output[:, :, :, filter_index])
 
 
