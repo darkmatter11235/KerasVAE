@@ -14,77 +14,77 @@ image_height = 120
 num_channels = 1
 #num_channels = 3
 
-num_epochs = 4000
+num_epochs = 1
 
 load_existing = False
 
 # input layer will be image of shape (28,28,1)
 # Load the mnist data set
 #(x_train, _), (x_test, _) = mnist.load_data()
-
-folder = "./data/train"
-x_train = img_files_to_np_array(folder, image_width, image_height, num_channels)
-x_train = x_train.astype('float32') / 255.
-x_train = x_train.reshape(len(x_train), image_width, image_height, num_channels)
-
 folder = "./data/test"
 x_test = img_files_to_np_array(folder, image_width, image_height, num_channels)
 x_test = x_test.astype('float32') / 255.
 x_test = x_test.reshape(len(x_test), image_width, image_height, num_channels)
 
+autoencoder = []
+if not load_existing:
 
-#input_img = Input(shape=(28, 28, 1,))
-input_img = Input(shape=(image_width, image_height, num_channels,))
+    folder = "./data/train"
+    x_train = img_files_to_np_array(folder, image_width, image_height, num_channels)
+    x_train = x_train.astype('float32') / 255.
+    x_train = x_train.reshape(len(x_train), image_width, image_height, num_channels)
 
-x = Conv2D(16, (3, 3), activation='relu', padding='same')(input_img)  # (output_shape=(24,24,16)
+    #input_img = Input(shape=(28, 28, 1,))
+    input_img = Input(shape=(image_width, image_height, num_channels,))
 
-x = MaxPooling2D((2, 2), padding='same')(x)  # (output_shape=(20,20,16)
+    x = Conv2D(16, (3, 3), activation='relu', padding='same')(input_img)  # (output_shape=(24,24,16)
 
-x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(16,16,8))
+    x = MaxPooling2D((2, 2), padding='same')(x)  # (output_shape=(20,20,16)
 
-x = MaxPooling2D((2, 2), padding='same')(x)  # (output_shape=(12,12,8))
+    x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(16,16,8))
 
-x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(8,8,8))
+    x = MaxPooling2D((2, 2), padding='same')(x)  # (output_shape=(12,12,8))
 
-encoded = MaxPooling2D((2, 2), padding='same')(x)  # (output_shape=(4,4,8))
+    x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(8,8,8))
 
-x = Conv2D(8, (3, 3), activation='relu', padding='same')(encoded)  # (output_shape=(24,24,16)
+    encoded = MaxPooling2D((2, 2), padding='same')(x)  # (output_shape=(4,4,8))
 
-x = UpSampling2D((2, 2))(x)  # (output_shape=(20,20,16)
+    x = Conv2D(8, (3, 3), activation='relu', padding='same')(encoded)  # (output_shape=(24,24,16)
 
-x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(16,16,8))
+    x = UpSampling2D((2, 2))(x)  # (output_shape=(20,20,16)
 
-x = UpSampling2D((2, 2))(x)  # (output_shape=(12,12,8))
+    x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(16,16,8))
 
-x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(8,8,8))
+    x = UpSampling2D((2, 2))(x)  # (output_shape=(12,12,8))
 
-x = UpSampling2D((2, 2))(x)  # (output_shape=(4,4,8))
+    x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)  # (output_shape=(8,8,8))
 
-# decoded = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
-decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same')(x)
+    x = UpSampling2D((2, 2))(x)  # (output_shape=(4,4,8))
 
-autoencoder = Model(input_img, decoded)
+    # decoded = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
+    decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same')(x)
 
-autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
+    autoencoder = Model(input_img, decoded)
 
-encoder = Model(input_img, encoded)
+    autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
 
-# encoded_input = Input(shape=(4, 4, 8))
-encoded_input = Input(shape=(20, 15, 8))
+    encoder = Model(input_img, encoded)
 
-decoder_layer = autoencoder.layers[-7]
+    # encoded_input = Input(shape=(4, 4, 8))
+    encoded_input = Input(shape=(20, 15, 8))
 
-decoder = Model(encoded_input, decoder_layer(encoded_input))
+    decoder_layer = autoencoder.layers[-7]
+
+    decoder = Model(encoded_input, decoder_layer(encoded_input))
 
 
-# from keras.callbacks import TensorBoard
-autoencoder.fit(x_train, x_train,
-                epochs=num_epochs,
-                batch_size=256,
-                shuffle=True,
-                validation_data=(x_test, x_test))
-
-#                callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
+    # from keras.callbacks import TensorBoard
+    autoencoder.fit(x_train, x_train,
+                    epochs=num_epochs,
+                    batch_size=256,
+                    shuffle=True,
+                    validation_data=(x_test, x_test))
+    #                callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
 
 
 #encoded_images = encoder.predict(x_test)
@@ -92,6 +92,7 @@ autoencoder.fit(x_train, x_train,
 #decoded_images = decoder.predict(encoded_images)
 
 if load_existing:
+
     del autoencoder
     import h5py
     f = h5py.File('convAE_1000.h5', 'r')
@@ -105,6 +106,7 @@ if not load_existing:
     autoencoder.save("./convAE_"+str(num_epochs)+".h5")
 
 n = 1
+x_test = x_test * 255.
 
 plt.figure(figsize=(20, 10))
 for i in range(n):
