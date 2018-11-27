@@ -15,11 +15,11 @@ image_height = 120
 num_channels = 1
 # num_channels = 3
 
-num_epochs = 2000
+num_epochs = 4000
 
-load_existing = False
+load_existing = True
 
-ref_model_param = 5000
+ref_model_param = num_epochs
 
 nfilters_L1 = 32
 
@@ -122,14 +122,15 @@ if load_existing:
     model_file = 'convAE_' + str(ref_model_param) + '.h5'
     # f = h5py.File(model_file, 'r')
     # print(f.attrs.get('keras_version'))
-    autoencoder = load_model(model_file)
+    #autoencoder = load_model(model_file)
+    autoencoder = load_model(model_file, custom_objects={'xent_sobel': xent_sobel})
 
 decoded_images = autoencoder.predict(x_test)
 
 if not load_existing:
     autoencoder.save("./convAE_" + str(num_epochs) + ".h5")
 
-n = 1
+n = 5
 snap_image_to_bw = False
 snap_image_to_bw = True
 
