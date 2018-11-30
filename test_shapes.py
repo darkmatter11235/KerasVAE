@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Rectangle
 
+
 import os
 import shutil
 
@@ -19,12 +20,13 @@ def is_cut_legal(cut, ncuts):
     mc_spacing = 0.2
     for ncut in ncuts:
         if abs(cut - ncut) >= mc_spacing or cut == ncut:
-            return True
+            continue
         else:
             return False
-
+    return True
 
 def get_neighboring_cuts(data, cut_map):
+
     coords = data['coords']
     step_size = data['step_size']
     orient = data['orient']
@@ -74,25 +76,19 @@ def get_neighboring_cuts(data, cut_map):
             else:
                 cut_map[next_track] = [cur_x]
 
-def generate_image_from_cuts(cut_map, outFilePath):
+
+def generate_image_from_cuts(cut_map, output_file, distort=False):
 
     # Number of tracks
-    orient = "HORIZONTAL"
     n = 6
-    add_cuts = False
     # Create figure and axes
     fig, ax = plt.subplots(1)
     polygons = []
-    cuts = []
     y_step = 1.0 / n
     height = 1.0 / (2 * n)
-    width = 1.0
 
     min_length = 0.4
-    mc_spacing = 0.2
     cut_width = 0.1
-    cut_height = height
-    skip_neighbors = False
 
     # Loop over data points
     for i in range(n):
@@ -102,28 +98,32 @@ def generate_image_from_cuts(cut_map, outFilePath):
         cut_locs = []
         if i in cut_map:
             cut_locs = cut_map[i]
+
+        delta_width = 0
+        delta_loc = 0
         for cut_loc in cut_locs:
-            if cut_loc - x > min_length or cut_loc < cut_width:
-                width = cut_loc - x
+            if distort:
+                #delta_width = np.random.randint(-5, 5)/100
+                delta_loc = np.random.randint(0, 10)/100
+                cut_loc += delta_loc
+
+            if cut_loc - x > min_length or ( cut_loc == cut_locs[0] and cut_loc < cut_width ):
                 r = Rectangle((x, y), cut_loc - x, height)
-                rc = Rectangle((cut_loc, y), cut_width, height)
-                x = cut_loc + cut_width
+                x = cut_loc + cut_width + delta_width
                 polygons.append(r)
         if 1 - x > 0:
             r = Rectangle((x, y), 1 - x, height)
             polygons.append(r)
-        else:
-            r = Rectangle((x, y), 1 - x, height)
 
     pc = PatchCollection(polygons)
     pc.set_color("black")
     ax.add_collection(pc)
     plt.axis('off')
     # plt.show()
-    plt.savefig(outFilePath)
+    plt.savefig(output_file)
+
 
 def generate_seed_cut_map():
-
     # Number of tracks
     orient = "HORIZONTAL"
     n = 6
@@ -174,12 +174,13 @@ def generate_seed_cut_map():
                 data['track_number'] = i
                 data['cut_type'] = cut_type
                 x = cut_loc + cut_width
-                # shape_rect = Polygon([(xl, yl), (xl, yh), (xh, yh), (xh, yl)])
                 if not skip_neighbors:
                     get_neighboring_cuts(data, cut_map)
 
     return cut_map
 
+
 seed_cuts = generate_seed_cut_map()
 
 generate_image_from_cuts(seed_cuts, "test_cuts.png")
+generate_image_from_cuts(seed_cuts, "test_cuts_distorted.png", True)
