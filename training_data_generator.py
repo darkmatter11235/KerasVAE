@@ -1,5 +1,5 @@
-from shapely.geometry import Polygon, Point
-from descartes import PolygonPatch
+#from shapely.geometry import Polygon, Point
+#from descartes import PolygonPatch
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
@@ -186,10 +186,12 @@ def generate_seed_cut_map():
 def generate_training_set(dir, prefix, index):
     seed_cuts = generate_seed_cut_map()
     n_distortions = 4
-    clean_file = dir + "/" + prefix + "_target_" + str(index) + ".png"
+    target_dir = dir + "/target"
+    source_dir = dir + "/source"
+    clean_file = target_dir + "/" + prefix + "_target_" + str(index) + ".png"
     generate_image_from_cuts(seed_cuts, clean_file)
     for i in range(n_distortions):
-        dirty_file = dir + "/" + prefix + "_source_" + str(n_distortions * index + i) + ".png"
+        dirty_file = source_dir + "/" + prefix + "_source_" + str(n_distortions * index + i) + ".png"
         generate_image_from_cuts(seed_cuts, dirty_file, True)
 
 
