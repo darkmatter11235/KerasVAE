@@ -17,7 +17,7 @@ num_channels = 1
 
 num_epochs = 4000
 
-load_existing = True
+load_existing = False
 
 ref_model_param = num_epochs
 
@@ -27,19 +27,36 @@ nfilters_L2 = 16
 
 nfilters_L3 = 16
 
+n_distortions = 4
+
 # input layer will be image of shape (28,28,1)
 # Load the mnist data set
 # (x_train, _), (x_test, _) = mnist.load_data()
 if not load_existing:
-    folder = "./data/train"
-    x_train = img_files_to_np_array(folder, image_width, image_height, num_channels)
-    x_train = x_train.astype('float32') / 255.
-    x_train = x_train.reshape(len(x_train), image_width, image_height, num_channels)
-
-folder = "./data/test"
-x_test = img_files_to_np_array(folder, image_width, image_height, num_channels)
-x_test = x_test.astype('float32') / 255.
-x_test = x_test.reshape(len(x_test), image_width, image_height, num_channels)
+    folder = "./data/train/source"
+    x_train_source = img_files_to_np_array(folder, image_width, image_height, num_channels)
+    x_train_source = x_train_source.astype('float32') / 255.
+    x_train_source = x_train_source.reshape(len(x_train_source), image_width, image_height, num_channels)
+    folder = "./data/train/target"
+    x_train_t = img_files_to_np_array(folder, image_width, image_height, num_channels)
+    x_train_t = x_train_t.astype('float32') / 255.
+    x_train_t = x_train_t.reshape(len(x_train_t), image_width, image_height, num_channels)
+    x_train_target = np.ones_like(x_train_source)
+    for i in range(len(x_train_t)):
+        for k in range(n_distortions):
+            x_train_target[n_distortions * i + k] = x_train_t[i]
+folder = "./data/test/source"
+x_test_source = img_files_to_np_array(folder, image_width, image_height, num_channels)
+x_test_source = x_test_source.astype('float32') / 255.
+x_test_source = x_test_source.reshape(len(x_test_source), image_width, image_height, num_channels)
+folder = "./data/test/target"
+x_test_t = img_files_to_np_array(folder, image_width, image_height, num_channels)
+x_test_t = x_test_t.astype('float32') / 255.
+x_test_t = x_test_t.reshape(len(x_test_t), image_width, image_height, num_channels)
+x_test_target = np.ones_like(x_test_source)
+for i in range(len(x_test_t)):
+    for k in range(n_distortions):
+        x_test_target[n_distortions * i + k] = x_test_t[i]
 
 # input_img = Input(shape=(28, 28, 1,))
 input_img = Input(shape=(image_width, image_height, num_channels,))
@@ -87,8 +104,8 @@ def chamfer_loss_value(y_true, y_pred):
 
 
 autoencoder.compile(optimizer='adadelta', loss=xent_sobel)
-#autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
-#autoencoder.compile(optimizer='adadelta', loss=chamfer_loss_value)
+# autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
+# autoencoder.compile(optimizer='adadelta', loss=chamfer_loss_value)
 
 encoder = Model(input_img, encoded)
 
@@ -102,11 +119,11 @@ decoder = Model(encoded_input, decoder_layer(encoded_input))
 
 if not load_existing:
     # from keras.callbacks import TensorBoard
-    autoencoder.fit(x_train, x_train,
+    autoencoder.fit(x_train_source, x_train_target,
                     epochs=num_epochs,
                     batch_size=256,
                     shuffle=True,
-                    validation_data=(x_test, x_test))
+                    validation_data=(x_test_source, x_test_target))
 
 #                callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
 
@@ -122,10 +139,10 @@ if load_existing:
     model_file = 'convAE_' + str(ref_model_param) + '.h5'
     # f = h5py.File(model_file, 'r')
     # print(f.attrs.get('keras_version'))
-    #autoencoder = load_model(model_file)
+    # autoencoder = load_model(model_file)
     autoencoder = load_model(model_file, custom_objects={'xent_sobel': xent_sobel})
 
-decoded_images = autoencoder.predict(x_test)
+decoded_images = autoencoder.predict(x_test_source)
 
 if not load_existing:
     autoencoder.save("./convAE_" + str(num_epochs) + ".h5")
