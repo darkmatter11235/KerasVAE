@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Rectangle
 
-
 import os
 import shutil
 
@@ -25,8 +24,8 @@ def is_cut_legal(cut, ncuts):
             return False
     return True
 
-def get_neighboring_cuts(data, cut_map):
 
+def get_neighboring_cuts(data, cut_map):
     coords = data['coords']
     step_size = data['step_size']
     orient = data['orient']
@@ -78,7 +77,6 @@ def get_neighboring_cuts(data, cut_map):
 
 
 def generate_image_from_cuts(cut_map, output_file, distort=False):
-
     # Number of tracks
     n = 6
     # Create figure and axes
@@ -102,12 +100,12 @@ def generate_image_from_cuts(cut_map, output_file, distort=False):
         delta_width = 0
         delta_loc = 0
         for cut_loc in cut_locs:
-            if distort:
-                #delta_width = np.random.randint(-5, 5)/100
-                delta_loc = np.random.randint(0, 10)/100
+            if distort and cut_loc > 0:
+                # delta_width = np.random.randint(-5, 5)/100
+                delta_loc = np.random.randint(0, 10) / 100
                 cut_loc += delta_loc
 
-            if cut_loc - x > min_length or ( cut_loc == cut_locs[0] and cut_loc < cut_width ):
+            if cut_loc - x > min_length or (cut_loc == cut_locs[0] and cut_loc < cut_width):
                 r = Rectangle((x, y), cut_loc - x, height)
                 x = cut_loc + cut_width + delta_width
                 polygons.append(r)
@@ -158,10 +156,15 @@ def generate_seed_cut_map():
         else:
             for j in range(ncuts):
                 xloc = round(np.random.sample(1)[0], 2)
-                if i - 1 in cut_map:
-                    if is_cut_legal(xloc, cut_map[i - 1]):
-                        cut_locs.append(xloc)
-                else:
+                cut_legal = True
+                cuts_to_check = [i - 2, i - 1, i + 1, i + 2]
+                for track in cuts_to_check:
+                    if track in cut_map:
+                        if not is_cut_legal(xloc, cut_map[track]):
+                            cut_legal = False
+                            break
+
+                if cut_legal:
                     cut_locs.append(xloc)
                 skip_neighbors = False
         cut_locs.sort()
@@ -180,7 +183,29 @@ def generate_seed_cut_map():
     return cut_map
 
 
-seed_cuts = generate_seed_cut_map()
+def generate_training_set(dir, prefix, index):
+    seed_cuts = generate_seed_cut_map()
+    n_distortions = 4
+    clean_file = dir + "/" + prefix + "_target_" + str(index) + ".png"
+    generate_image_from_cuts(seed_cuts, clean_file)
+    for i in range(n_distortions):
+        dirty_file = dir + "/" + prefix + "_source_" + str(n_distortions * index + i) + ".png"
+        generate_image_from_cuts(seed_cuts, dirty_file, True)
 
-generate_image_from_cuts(seed_cuts, "test_cuts.png")
-generate_image_from_cuts(seed_cuts, "test_cuts_distorted.png", True)
+
+train_img_dir = "./data/train"
+test_img_dir = "./data/test"
+validate_img_dir = "./data/scratch"
+n_train = 1000
+n_test = 100
+n_validate = 1
+os.makedirs(train_img_dir, exist_ok=True)
+os.makedirs(test_img_dir, exist_ok=True)
+os.makedirs(validate_img_dir, exist_ok=True)
+
+#for i in range(n_train):
+for i in range(597, n_train):
+    generate_training_set(train_img_dir, "train", i)
+
+for i in range(n_test):
+    generate_training_set(test_img_dir, "test", i)
