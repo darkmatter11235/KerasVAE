@@ -15,8 +15,16 @@ import shutil
 # algorithm pick the first cut and randomly choose the type for the next cut
 # if you get type 3, the cut will skip a track
 
-def get_neighboring_cuts(data, got_cuts):
+def is_cut_legal(cut, ncuts):
+    mc_spacing = 0.2
+    for ncut in ncuts:
+        if abs(cut - ncut) >= mc_spacing or cut == ncut:
+            return True
+        else:
+            return False
 
+
+def get_neighboring_cuts(data, cut_map):
     coords = data['coords']
     step_size = data['step_size']
     orient = data['orient']
@@ -42,33 +50,32 @@ def get_neighboring_cuts(data, got_cuts):
         cur_height = prev_height
 
         if ctype == 0:
-            cur_y = prev_y * step_size
+            cur_y = prev_y + step_size
             cur_x = prev_x
             next_track = current_track + 1
-            if next_track in got_cuts:
-                got_cuts[next_track].append(cur_x)
+            if next_track in cut_map:
+                cut_map[next_track].append(cur_x)
             else:
-                got_cuts[next_track] = [cur_x]
+                cut_map[next_track] = [cur_x]
         elif ctype == 1:
-            cur_y = prev_y * step_size
+            cur_y = prev_y + step_size
             cur_x = prev_x + mc_spacing
             next_track = current_track + 1
-            if next_track in got_cuts:
-                got_cuts[next_track].append(cur_x)
+            if next_track in cut_map:
+                cut_map[next_track].append(cur_x)
             else:
-                got_cuts[next_track] = [cur_x]
+                cut_map[next_track] = [cur_x]
         elif ctype == 2:
-            cur_y = prev_y * 2 * step_size
+            cur_y = prev_y + 2 * step_size
             cur_x = prev_x + mc_spacing
             next_track = current_track + 2
-            if next_track in got_cuts:
-                got_cuts[next_track].append(cur_x)
+            if next_track in cut_map:
+                cut_map[next_track].append(cur_x)
             else:
-                got_cuts[next_track] = [cur_x]
+                cut_map[next_track] = [cur_x]
 
+def generate_image_from_cuts(cut_map, outFilePath):
 
-
-def generate_training_data(outFilePath):
     # Number of tracks
     orient = "HORIZONTAL"
     n = 6
@@ -85,6 +92,48 @@ def generate_training_data(outFilePath):
     mc_spacing = 0.2
     cut_width = 0.1
     cut_height = height
+    skip_neighbors = False
+
+    # Loop over data points
+    for i in range(n):
+
+        y = y_step * i
+        x = 0
+        cut_locs = []
+        if i in cut_map:
+            cut_locs = cut_map[i]
+        for cut_loc in cut_locs:
+            if cut_loc - x > min_length or cut_loc < cut_width:
+                width = cut_loc - x
+                r = Rectangle((x, y), cut_loc - x, height)
+                rc = Rectangle((cut_loc, y), cut_width, height)
+                x = cut_loc + cut_width
+                polygons.append(r)
+        if 1 - x > 0:
+            r = Rectangle((x, y), 1 - x, height)
+            polygons.append(r)
+        else:
+            r = Rectangle((x, y), 1 - x, height)
+
+    pc = PatchCollection(polygons)
+    pc.set_color("black")
+    ax.add_collection(pc)
+    plt.axis('off')
+    # plt.show()
+    plt.savefig(outFilePath)
+
+def generate_seed_cut_map():
+
+    # Number of tracks
+    orient = "HORIZONTAL"
+    n = 6
+    # Create figure and axes
+    y_step = 1.0 / n
+    height = 1.0 / (2 * n)
+
+    min_length = 0.4
+    mc_spacing = 0.2
+    cut_width = 0.1
     max_cuts = 3
     n_cut_types = 3
     data = {}
@@ -92,7 +141,7 @@ def generate_training_data(outFilePath):
     data['max_tracks'] = n
     data['mc_spacing'] = mc_spacing
     data['step_size'] = y_step
-    got_cuts = {}
+    cut_map = {}
     skip_neighbors = False
 
     # Loop over data points
@@ -103,50 +152,34 @@ def generate_training_data(outFilePath):
         ncuts = np.random.randint(0, max_cuts, 1)[0]
         cut_type = np.random.randint(0, n_cut_types, 1)[0]
         cut_locs = []
-        if i in got_cuts:
-            cut_locs = got_cuts[i]
+        if i in cut_map:
+            cut_locs = cut_map[i]
             skip_neighbors = True
         else:
             for j in range(ncuts):
                 xloc = round(np.random.sample(1)[0], 2)
-                cut_locs.append(xloc)
+                if i - 1 in cut_map:
+                    if is_cut_legal(xloc, cut_map[i - 1]):
+                        cut_locs.append(xloc)
+                else:
+                    cut_locs.append(xloc)
+                skip_neighbors = False
         cut_locs.sort()
-        print(cut_locs)
+        if len(cut_locs):
+            cut_map[i] = cut_locs
         for cut_loc in cut_locs:
             if cut_loc - x > min_length or cut_loc < cut_width:
                 width = cut_loc - x
-                xl = x - width / 2
-                xh = x + width / 2
-                yl = y - height / 2
-                yh = y + height / 2
-                data['coords'] = [x, y, width, height]
+                data['coords'] = [cut_loc, y, width, height]
                 data['track_number'] = i
                 data['cut_type'] = cut_type
-                r = Rectangle((x, y), cut_loc - x, height)
-                rc = Rectangle((cut_loc, y), cut_width, height)
                 x = cut_loc + cut_width
-                #shape_rect = Polygon([(xl, yl), (xl, yh), (xh, yh), (xh, yl)])
-                polygons.append(r)
-                cuts.append(rc)
+                # shape_rect = Polygon([(xl, yl), (xl, yh), (xh, yh), (xh, yl)])
                 if not skip_neighbors:
-                    get_neighboring_cuts(data, got_cuts)
-        if 1 - x > min_length:
-            r = Rectangle((x, y), 1 - x, height)
-            polygons.append(r)
-        else:
-            r = Rectangle((x, y), 1 - x, height)
-            cuts.append(r)
+                    get_neighboring_cuts(data, cut_map)
 
-    pc = PatchCollection(polygons)
-    pc.set_color("black")
-    ax.add_collection(pc)
-    if add_cuts:
-        pc = PatchCollection(cuts)
-        pc.set_color("red")
-        ax.add_collection(pc)
-    plt.axis('off')
-    # plt.show()
-    plt.savefig(outFilePath)
+    return cut_map
 
+seed_cuts = generate_seed_cut_map()
 
-generate_training_data("test_cuts.png")
+generate_image_from_cuts(seed_cuts, "test_cuts.png")

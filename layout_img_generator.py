@@ -6,6 +6,8 @@ from matplotlib.patches import Rectangle
 import os
 import shutil
 
+
+
 def generate_training_data(outFilePath):
 
     # Number of tracks
