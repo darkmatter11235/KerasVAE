@@ -205,8 +205,7 @@ os.makedirs(train_img_dir, exist_ok=True)
 os.makedirs(test_img_dir, exist_ok=True)
 os.makedirs(validate_img_dir, exist_ok=True)
 
-#for i in range(n_train):
-for i in range(597, n_train):
+for i in range(n_train):
     generate_training_set(train_img_dir, "train", i)
 
 for i in range(n_test):
