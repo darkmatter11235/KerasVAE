@@ -15,17 +15,18 @@ image_height = 120
 num_channels = 1
 # num_channels = 3
 
-num_epochs = 2000
+num_epochs = 5000
 
 load_existing = False
+#load_existing = True
 
 ref_model_param = num_epochs
 
-nfilters_L1 = 32
+nfilters_L1 = 64
 
-nfilters_L2 = 16
+nfilters_L2 = 32
 
-nfilters_L3 = 16
+nfilters_L3 = 32
 
 n_distortions = 4
 
@@ -111,7 +112,8 @@ encoder = Model(input_img, encoded)
 
 # encoded_input = Input(shape=(4, 4, 8))
 # encoded_input = Input(shape=(20, 15, 8))
-encoded_input = Input(shape=(20, 15, 16))
+#encoded_input = Input(shape=(20, 15, 16))
+encoded_input = Input(shape=(20, 15, 32))
 
 decoder_layer = autoencoder.layers[-7]
 
@@ -156,10 +158,10 @@ for i in range(n):
     # display original image
     ax = plt.subplot(2, n, i + 1)
     if num_channels > 1:
-        plt.imshow(x_test[i].reshape(image_height, image_width, num_channels))
+        plt.imshow(x_test_target[i].reshape(image_height, image_width, num_channels))
     else:
         plt.gray()
-        plt.imshow(x_test[i].reshape(image_height, image_width))
+        plt.imshow(x_test_target[i].reshape(image_height, image_width))
     # plt.gray()
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
