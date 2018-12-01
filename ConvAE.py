@@ -46,6 +46,7 @@ if not load_existing:
     for i in range(len(x_train_t)):
         for k in range(n_distortions):
             x_train_target[n_distortions * i + k] = x_train_t[i]
+
 folder = "./data/test/source"
 x_test_source = img_files_to_np_array(folder, image_width, image_height, num_channels)
 x_test_source = x_test_source.astype('float32') / 255.
@@ -55,6 +56,7 @@ x_test_t = img_files_to_np_array(folder, image_width, image_height, num_channels
 x_test_t = x_test_t.astype('float32') / 255.
 x_test_t = x_test_t.reshape(len(x_test_t), image_width, image_height, num_channels)
 x_test_target = np.ones_like(x_test_source)
+
 for i in range(len(x_test_t)):
     for k in range(n_distortions):
         x_test_target[n_distortions * i + k] = x_test_t[i]

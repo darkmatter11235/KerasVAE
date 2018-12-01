@@ -100,7 +100,7 @@ def generate_image_from_cuts(cut_map, output_file, distort=False):
         delta_width = 0
         delta_loc = 0
         for cut_loc in cut_locs:
-            if distort and cut_loc > 0:
+            if distort and ( cut_loc > cut_width or cut < 1.0-cut_width ) :
                 # delta_width = np.random.randint(-5, 5)/100
                 delta_loc = np.random.randint(0, 10) / 100
                 cut_loc += delta_loc
