@@ -200,8 +200,8 @@ def generate_training_set(dir, prefix, index):
 train_img_dir = "./data/train"
 test_img_dir = "./data/test"
 validate_img_dir = "./data/scratch"
-n_train = 1000
-n_test = 100
+n_train = 250
+n_test = 50
 n_validate = 1
 os.makedirs(train_img_dir, exist_ok=True)
 os.makedirs(test_img_dir, exist_ok=True)
