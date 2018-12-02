@@ -22,7 +22,7 @@ input_size = image_width * image_height * num_channels
 # this is input placeholder
 input_img = Input(shape=(input_size,))
 
-#encoded = Dense(encoding_dim, activation='relu')(input_img)
+# encoded = Dense(encoding_dim, activation='relu')(input_img)
 encoded = Dense(encoding_dim, activation='sigmoid')(input_img)
 
 decoded = Dense(input_size, activation='sigmoid')(encoded)
@@ -99,11 +99,11 @@ for i in range(n):
         print(x_test[i])
         print("after")
         print(img)
-        #print(img.astype('unit8'))
-        #img[img*255 < 128] = 0
-        #img[img*255 >= 128] = 255
-        #print("after")
-        #print(img.tostring())
+        # print(img.astype('unit8'))
+        # img[img*255 < 128] = 0
+        # img[img*255 >= 128] = 255
+        # print("after")
+        # print(img.tostring())
         plt.imshow(img, cmap='gray')
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)

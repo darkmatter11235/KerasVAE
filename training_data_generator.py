@@ -1,5 +1,5 @@
-#from shapely.geometry import Polygon, Point
-#from descartes import PolygonPatch
+# from shapely.geometry import Polygon, Point
+# from descartes import PolygonPatch
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
@@ -85,7 +85,7 @@ def generate_image_from_cuts(cut_map, output_file, distort=False):
     y_step = 1.0 / n
     height = 1.0 / (2 * n)
 
-    min_length = 0.4
+    min_length = 0.3
     cut_width = 0.1
 
     # Loop over data points
@@ -100,15 +100,15 @@ def generate_image_from_cuts(cut_map, output_file, distort=False):
         delta_width = 0
         delta_loc = 0
         for cut_loc in cut_locs:
-            if distort and ( cut_loc > cut_width or cut < 1.0-cut_width ) :
+            if distort and (cut_loc > min_length or cut_loc < (1.0 - min_length)):
                 # delta_width = np.random.randint(-5, 5)/100
                 delta_loc = np.random.randint(0, 10) / 100
                 cut_loc += delta_loc
 
-            if cut_loc - x > min_length or (cut_loc == cut_locs[0] and cut_loc < cut_width):
-                r = Rectangle((x, y), cut_loc - x, height)
-                x = cut_loc + cut_width + delta_width
-                polygons.append(r)
+            #if cut_loc - x > min_length or (cut_loc == cut_locs[0] and cut_loc < cut_width):
+            r = Rectangle((x, y), cut_loc - x, height)
+            x = cut_loc + cut_width + delta_width
+            polygons.append(r)
         if 1 - x > 0:
             r = Rectangle((x, y), 1 - x, height)
             polygons.append(r)
@@ -129,7 +129,7 @@ def generate_seed_cut_map():
     y_step = 1.0 / n
     height = 1.0 / (2 * n)
 
-    min_length = 0.4
+    min_length = 0.3
     mc_spacing = 0.2
     cut_width = 0.1
     max_cuts = 3
@@ -168,15 +168,15 @@ def generate_seed_cut_map():
                     cut_locs.append(xloc)
                 skip_neighbors = False
         cut_locs.sort()
-        if len(cut_locs):
-            cut_map[i] = cut_locs
+        cut_map[i] = []
         for cut_loc in cut_locs:
-            if cut_loc - x > min_length or cut_loc < cut_width:
+            if (x > 0 and (cut_loc - x) > min_length) or x == 0:
                 width = cut_loc - x
-                data['coords'] = [cut_loc, y, width, height]
+                data['coords'] = [cut_loc, y, cut_width, height]
                 data['track_number'] = i
                 data['cut_type'] = cut_type
                 x = cut_loc + cut_width
+                cut_map[i].append(cut_loc)
                 if not skip_neighbors:
                     get_neighboring_cuts(data, cut_map)
 
@@ -207,8 +207,9 @@ os.makedirs(train_img_dir, exist_ok=True)
 os.makedirs(test_img_dir, exist_ok=True)
 os.makedirs(validate_img_dir, exist_ok=True)
 
-for i in range(n_train):
-    generate_training_set(train_img_dir, "train", i)
+generate_training_set("scratch", "train", 0)
+#for i in range(n_train):
+    #generate_training_set(train_img_dir, "train", i)
 
-for i in range(n_test):
-    generate_training_set(test_img_dir, "test", i)
+#for i in range(n_test):
+    #generate_training_set(test_img_dir, "test", i)

@@ -18,7 +18,7 @@ num_channels = 1
 num_epochs = 5000
 
 load_existing = False
-#load_existing = True
+# load_existing = True
 
 ref_model_param = num_epochs
 
@@ -114,7 +114,7 @@ encoder = Model(input_img, encoded)
 
 # encoded_input = Input(shape=(4, 4, 8))
 # encoded_input = Input(shape=(20, 15, 8))
-#encoded_input = Input(shape=(20, 15, 16))
+# encoded_input = Input(shape=(20, 15, 16))
 encoded_input = Input(shape=(20, 15, 32))
 
 decoder_layer = autoencoder.layers[-7]

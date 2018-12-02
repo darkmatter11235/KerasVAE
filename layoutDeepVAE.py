@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 
 from utils import *
 
-
 # encoding dimension size
 encoding_dim_1 = 800
 
@@ -46,10 +45,10 @@ folder = "./data/test"
 x_test = img_files_to_np_array(folder, image_width, image_height, num_channels)
 x_test = x_test.astype('float32') / 255.
 x_test = x_test.reshape(len(x_test), np.prod(x_test.shape[1:]))
-#x_test = x_test.reshape(len(x_test), image_width, image_height, num_channels)
+# x_test = x_test.reshape(len(x_test), image_width, image_height, num_channels)
 
 # input image size W*H
-input_size = image_width*image_height*num_channels
+input_size = image_width * image_height * num_channels
 
 # this is input placeholder
 input_img = Input(shape=(input_size,))
@@ -94,6 +93,7 @@ decoded_images = autoencoder.predict(x_test)
 if load_existing:
     del autoencoder
     import h5py
+
     model_file = 'DeepAE_' + str(ref_model_param) + '.h5'
     # f = h5py.File(model_file, 'r')
     # print(f.attrs.get('keras_version'))
