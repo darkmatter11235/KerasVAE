@@ -188,7 +188,7 @@ def generate_training_set(dir, prefix, index):
     n_distortions = 4
     target_dir = dir + "/target"
     os.makedirs(target_dir, exist_ok=True)
-    source_dir = dir + "/source"
+    source_dir = dir + "/source"G
     os.makedirs(source_dir, exist_ok=True)
     clean_file = target_dir + "/" + prefix + "_target_" + str(index) + ".png"
     generate_image_from_cuts(seed_cuts, clean_file)
@@ -207,9 +207,9 @@ os.makedirs(train_img_dir, exist_ok=True)
 os.makedirs(test_img_dir, exist_ok=True)
 os.makedirs(validate_img_dir, exist_ok=True)
 
-generate_training_set("scratch", "train", 0)
-#for i in range(n_train):
-    #generate_training_set(train_img_dir, "train", i)
+#generate_training_set("scratch", "train", 0)
+for i in range(n_train):
+    generate_training_set(train_img_dir, "train", i)
 
-#for i in range(n_test):
-    #generate_training_set(test_img_dir, "test", i)
+for i in range(n_test):
+    generate_training_set(test_img_dir, "test", i)
