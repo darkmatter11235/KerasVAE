@@ -188,7 +188,7 @@ def generate_training_set(dir, prefix, index):
     n_distortions = 4
     target_dir = dir + "/target"
     os.makedirs(target_dir, exist_ok=True)
-    source_dir = dir + "/source"G
+    source_dir = dir + "/source"
     os.makedirs(source_dir, exist_ok=True)
     clean_file = target_dir + "/" + prefix + "_target_" + str(index) + ".png"
     generate_image_from_cuts(seed_cuts, clean_file)
