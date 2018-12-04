@@ -18,8 +18,8 @@ num_channels = 1
 #num_epochs = 5000
 num_epochs = 2000
 
+load_existing = True
 load_existing = False
-# load_existing = True
 
 ref_model_param = num_epochs
 
@@ -109,9 +109,11 @@ def chamfer_loss_value(y_true, y_pred):
 
     return K.mean(finalChamferDistanceSum)
 
-
-autoencoder.compile(optimizer='adadelta', loss=xent_sobel)
-# autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
+use_sobel = False
+if use_sobel:
+    autoencoder.compile(optimizer='adadelta', loss=xent_sobel)
+else:
+    autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
 # autoencoder.compile(optimizer='adadelta', loss=chamfer_loss_value)
 
 encoder = Model(input_img, encoded)
@@ -147,8 +149,10 @@ if load_existing:
     model_file = 'convAE_' + str(ref_model_param) + '.h5'
     # f = h5py.File(model_file, 'r')
     # print(f.attrs.get('keras_version'))
-    # autoencoder = load_model(model_file)
-    autoencoder = load_model(model_file, custom_objects={'xent_sobel': xent_sobel})
+    if not use_sobel:
+        autoencoder = load_model(model_file)
+    else:
+        autoencoder = load_model(model_file, custom_objects={'xent_sobel': xent_sobel})
 
 decoded_images = autoencoder.predict(x_test_source)
 
