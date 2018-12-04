@@ -16,7 +16,7 @@ num_channels = 1
 # num_channels = 3
 
 #num_epochs = 5000
-num_epochs = 2
+num_epochs = 2000
 
 load_existing = False
 # load_existing = True
