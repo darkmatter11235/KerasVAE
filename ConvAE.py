@@ -15,8 +15,8 @@ image_height = 120
 num_channels = 1
 # num_channels = 3
 
-#num_epochs = 5000
-num_epochs = 2000
+num_epochs = 5000
+#num_epochs = 2000
 
 load_existing = True
 load_existing = False
@@ -160,8 +160,8 @@ if not load_existing:
     autoencoder.save("./convAE_" + str(num_epochs) + ".h5")
 
 n = 5
-snap_image_to_bw = False
 snap_image_to_bw = True
+snap_image_to_bw = False
 
 plt.figure(figsize=(20, 10))
 for i in range(n):
