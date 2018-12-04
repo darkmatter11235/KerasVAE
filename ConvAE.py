@@ -16,18 +16,21 @@ num_channels = 1
 # num_channels = 3
 
 #num_epochs = 5000
-num_epochs = 2000
+num_epochs = 2
 
 load_existing = False
 # load_existing = True
 
 ref_model_param = num_epochs
 
-nfilters_L1 = 64
+#nfilters_L1 = 64
+nfilters_L1 = 32
 
-nfilters_L2 = 32
+#nfilters_L2 = 32
+nfilters_L2 = 16
 
-nfilters_L3 = 32
+#nfilters_L3 = 32
+nfilters_L3 = 16
 
 n_distortions = 4
 
@@ -115,8 +118,8 @@ encoder = Model(input_img, encoded)
 
 # encoded_input = Input(shape=(4, 4, 8))
 # encoded_input = Input(shape=(20, 15, 8))
-# encoded_input = Input(shape=(20, 15, 16))
-encoded_input = Input(shape=(20, 15, 32))
+encoded_input = Input(shape=(20, 15, 16))
+#encoded_input = Input(shape=(20, 15, 32))
 
 decoder_layer = autoencoder.layers[-7]
 

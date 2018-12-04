@@ -119,6 +119,7 @@ def generate_image_from_cuts(cut_map, output_file, distort=False):
     plt.axis('off')
     # plt.show()
     plt.savefig(output_file)
+    plt.close(fig)
 
 
 def generate_seed_cut_map():
