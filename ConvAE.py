@@ -15,8 +15,8 @@ image_height = 120
 num_channels = 1
 # num_channels = 3
 
-num_epochs = 5000
-#num_epochs = 2000
+#num_epochs = 5000
+num_epochs = 2000
 
 load_existing = True
 load_existing = False
@@ -129,9 +129,19 @@ decoder_layer = autoencoder.layers[-7]
 
 decoder = Model(encoded_input, decoder_layer(encoded_input))
 
+train_features = True
+
 if not load_existing:
     # from keras.callbacks import TensorBoard
-    autoencoder.fit(x_train_source, x_train_target,
+    if train_features:
+        autoencoder.fit(x_train_source, x_train_source,
+                    epochs=num_epochs,
+                    batch_size=256,
+                    shuffle=True,
+                    validation_data=(x_test_source, x_test_source))
+
+    else:
+        autoencoder.fit(x_train_source, x_train_target,
                     epochs=num_epochs,
                     batch_size=256,
                     shuffle=True,
