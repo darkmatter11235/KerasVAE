@@ -110,10 +110,12 @@ def chamfer_loss_value(y_true, y_pred):
     return K.mean(finalChamferDistanceSum)
 
 use_sobel = False
+optimizer = 'adadelta'
+optimizer = 'adam'
 if use_sobel:
-    autoencoder.compile(optimizer='adadelta', loss=xent_sobel)
+    autoencoder.compile(optimizer=optimizer, loss=xent_sobel)
 else:
-    autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
+    autoencoder.compile(optimizer=optimizer, loss='binary_crossentropy')
 # autoencoder.compile(optimizer='adadelta', loss=chamfer_loss_value)
 
 encoder = Model(input_img, encoded)
