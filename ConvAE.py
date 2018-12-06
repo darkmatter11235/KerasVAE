@@ -30,7 +30,7 @@ nfilters_L1 = 32
 nfilters_L2 = 16
 
 #nfilters_L3 = 32
-nfilters_L3 = 2
+nfilters_L3 = 4
 
 n_distortions = 4
 
@@ -121,10 +121,7 @@ else:
 encoder = Model(input_img, encoded)
 
 # encoded_input = Input(shape=(4, 4, 8))
-# encoded_input = Input(shape=(20, 15, 8))
-#encoded_input = Input(shape=(20, 15, 16))
-encoded_input = Input(shape=(20, 15, 2))
-#encoded_input = Input(shape=(20, 15, 32))
+encoded_input = Input(shape=(20, 15, nfilters_L3))
 
 decoder_layer = autoencoder.layers[-7]
 
